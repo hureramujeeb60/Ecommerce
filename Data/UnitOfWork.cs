@@ -6,6 +6,7 @@ namespace Ecommerce.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+        private readonly ConcurrentDictionary<Type, object> _repositories = new();
 
         public UnitOfWork(ApplicationDbContext context,
             ICustomerRepository customerRepository,
@@ -30,6 +31,17 @@ namespace Ecommerce.Data
         public IProductRepository Products { get; private set; }
         public IOrderItemRepository OrderItems { get; private set; }
         public ICategoryRepository Categories { get; private set; }
+
+        public IGenericRepository<T> GetRepository<T>() where T : class
+        {
+            if (!_repositories.ContainsKey(typeof(T)))
+            {
+                var repository = new GenericRepository<T>(_context);
+                _repositories.TryAdd(typeof(T), repository);
+            }
+
+            return (IGenericRepository<T>)_repositories[typeof(T)];
+        }
 
         public async Task<int> CompleteAsync()
         {

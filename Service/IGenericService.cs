@@ -5,11 +5,11 @@ namespace Ecommerce.Service
 {
     public interface IGenericService<T> where T : class
     {
-        //Task<ApiResponse<T>> GetByIdAsync(int id);
-        //Task<ApiResponse<IEnumerable<T>>> GetAllAsync();
-        //Task<ApiResponse<IEnumerable<T>>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<ApiResponse<T>> GetByIdAsync(int id);
+        Task<ApiResponse<IEnumerable<T>>> GetAllAsync();
+        Task<ApiResponse<IEnumerable<T>>> FindAsync(Expression<Func<T, bool>> predicate);
         Task<ApiResponse<T>> AddAsync(T entity);
-        //Task<ApiResponse<T>> Update(T entity);
-        //Task<ApiResponse<T>> Delete(T entity);
+        Task<ApiResponse<T>> Update(T entity);
+        Task<ApiResponse<T>> Delete(T entity);
     }
 }
