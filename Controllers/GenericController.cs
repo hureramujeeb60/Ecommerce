@@ -1,63 +1,152 @@
-[ApiController]
-[Route("api/[controller]")]
-public class GenericController<T, TDto> : ControllerBase where T : class where TDto : class
+using Microsoft.AspNetCore.Mvc;
+using shoppetApi.Helper;
+using shoppetApi.Services;
+using AutoMapper;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+
+namespace shoppetApi.Controllers
 {
-    private readonly IGenericService<T> _service;
-    private readonly IMapper _mapper;  // For mapping between models and DTOs
-
-    public GenericController(IGenericService<T> service, IMapper mapper)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GenericController<T, TDto> : ControllerBase, IGenericController<TDto> where T : class where TDto : class
     {
-        _service = service;
-        _mapper = mapper;
-    }
+        private readonly IGenericService<T> _genericService;
+        private readonly IMapper _mapper;
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
+        public GenericController(IGenericService<T> genericService, IMapper mapper)
+        {
+            _genericService = genericService;
+            _mapper = mapper;
+        }
 
-        var dto = _mapper.Map<TDto>(entity);
-        return Ok(dto);
-    }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TDto>>> GetAllAsync()
+        {
+            try
+            {
+                var result = await _genericService.GetAllAsync();
+                if (!result.Success)
+                {
+                    return NotFound(result.Message);
+                }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var entities = await _service.GetAllAsync();
-        var dtos = _mapper.Map<IEnumerable<TDto>>(entities);
-        return Ok(dtos);
-    }
+                var dtos = _mapper.Map<IEnumerable<TDto>>(result.Data);
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
+            }
+        }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] TDto dto)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TDto>> GetByIdAsync(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("The id is invalid");
+                }
 
-        var entity = _mapper.Map<T>(dto);
-        await _service.AddAsync(entity);
-        return CreatedAtAction(nameof(GetById), new { id = (entity as dynamic).Id }, dto);
-    }
+                var result = await _genericService.GetByIdAsync(id);
+                if (!result.Success)
+                {
+                    return NotFound(result.Message);
+                }
 
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] TDto dto)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+                var dto = _mapper.Map<TDto>(result.Data);
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
+            }
+        }
 
-        var entity = _mapper.Map<T>(dto);
-        if ((entity as dynamic).Id != id) return BadRequest("ID mismatch");
+        [HttpPost]
+        public async Task<ActionResult<TDto>> AddAsync([FromBody] TDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        _service.Update(entity);
-        return NoContent();
-    }
+            try
+            {
+                var entity = _mapper.Map<T>(dto);
+                var result = await _genericService.AddAsync(entity);
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
+                if (!result.Success)
+                {
+                    return Conflict(result.Message);
+                }
 
-        _service.Delete(entity);
-        return NoContent();
+                var createdDto = _mapper.Map<TDto>(result.Data);
+                return CreatedAtAction(nameof(GetByIdAsync), new { id = (result.Data as dynamic).Id }, createdDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TDto>> UpdateAsync(int id, [FromBody] TDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("The id is invalid");
+                }
+
+                var entity = _mapper.Map<T>(dto);
+                var result = await _genericService.UpdateAsync(entity);
+
+                if (!result.Success)
+                {
+                    return NotFound(result.Message);
+                }
+
+                var updatedDto = _mapper.Map<TDto>(result.Data);
+                return Ok(updatedDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<TDto>> DeleteAsync(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("The id is invalid");
+                }
+
+                var result = await _genericService.DeleteAsync(id);
+                if (!result.Success)
+                {
+                    return NotFound(result.Message);
+                }
+
+                return Ok(result.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
+            }
+        }
     }
 }

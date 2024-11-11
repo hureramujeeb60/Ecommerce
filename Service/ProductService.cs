@@ -18,7 +18,7 @@ namespace Ecommerce.Service
                 throw new ArgumentException("Product price must be at least 1.00.");
             }
 
-            await _unitOfWork.Products.AddAsync(product);
+              await _unitOfWork.Products.AddAsync(product);
 
             await _unitOfWork.CompleteAsync();
 
