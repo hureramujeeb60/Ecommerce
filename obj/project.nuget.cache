@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "T37fDcAjdP4=",
+  "dgSpecHash": "6WFfwoTsOmc=",
   "success": true,
   "projectFilePath": "C:\\Users\\mujeehur\\source\\repos\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\mujeehur\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\mujeehur\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\mujeehur\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "C:\\Users\\mujeehur\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.3\\microsoft.codeanalysis.analyzers.3.3.3.nupkg.sha512",

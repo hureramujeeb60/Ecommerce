@@ -2,7 +2,7 @@
 
 namespace Ecommerce.Interfaces
 {
-    public interface IProductRepository: IGenericRespository<Product>
+    public interface IProductRepository: IGenericRepository<Product>
     {
         Task<IEnumerable<Product>> GetProductsWithCategory(int categoryId);
     }

@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using shoppetApi.Helper;
-using shoppetApi.Services;
+using Ecommerce.Service;
+using Ecommerce.Helper;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 
-namespace shoppetApi.Controllers
+namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenericController<T, TDto> : ControllerBase, IGenericController<TDto> where T : class where TDto : class
+    public class GenericController<T, TDto> : ControllerBase, IGenericController<T, TDto> where T : class where TDto : class
     {
         private readonly IGenericService<T> _genericService;
         private readonly IMapper _mapper;
@@ -66,8 +63,32 @@ namespace shoppetApi.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<TDto>> Delete(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("The id is invalid");
+                }
+
+                var result = await _genericService.Delete(id);
+                if (!result.Success)
+                {
+                    return NotFound(result.Message);
+                }
+
+                return Ok(result.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
+            }
+        }
+
         [HttpPost]
-        public async Task<ActionResult<TDto>> AddAsync([FromBody] TDto dto)
+        public async Task<ActionResult<TDto>> AddAsync([FromBody] T entity)
         {
             if (!ModelState.IsValid)
             {
@@ -76,8 +97,8 @@ namespace shoppetApi.Controllers
 
             try
             {
-                var entity = _mapper.Map<T>(dto);
-                var result = await _genericService.AddAsync(entity);
+                var mapEntity = _mapper.Map<T>(entity);
+                var result = await _genericService.AddAsync(mapEntity);
 
                 if (!result.Success)
                 {
@@ -92,9 +113,8 @@ namespace shoppetApi.Controllers
                 return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<TDto>> UpdateAsync(int id, [FromBody] TDto dto)
+        public async Task<ActionResult<TDto>> Update(int id, [FromBody] T entity)
         {
             if (!ModelState.IsValid)
             {
@@ -108,8 +128,8 @@ namespace shoppetApi.Controllers
                     return BadRequest("The id is invalid");
                 }
 
-                var entity = _mapper.Map<T>(dto);
-                var result = await _genericService.UpdateAsync(entity);
+                var mapEntity = _mapper.Map<T>(entity);
+                var result = await _genericService.Update(id, mapEntity);
 
                 if (!result.Success)
                 {
@@ -118,30 +138,6 @@ namespace shoppetApi.Controllers
 
                 var updatedDto = _mapper.Map<TDto>(result.Data);
                 return Ok(updatedDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, MessageHelper.ErrorOccured(ex.Message));
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<TDto>> DeleteAsync(int id)
-        {
-            try
-            {
-                if (id <= 0)
-                {
-                    return BadRequest("The id is invalid");
-                }
-
-                var result = await _genericService.DeleteAsync(id);
-                if (!result.Success)
-                {
-                    return NotFound(result.Message);
-                }
-
-                return Ok(result.Message);
             }
             catch (Exception ex)
             {

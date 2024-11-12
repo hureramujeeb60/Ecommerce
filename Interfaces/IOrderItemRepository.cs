@@ -2,7 +2,7 @@
 
 namespace Ecommerce.Interfaces
 {
-    public interface IOrderItemRepository: IGenericRespository<OrderItem>
+    public interface IOrderItemRepository: IGenericRepository<OrderItem>
     {
     }
 }

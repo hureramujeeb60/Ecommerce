@@ -7,6 +7,7 @@
         IProductRepository Products { get; }
         ICategoryRepository Categories { get; }
         IOrderItemRepository OrderItems { get; }
+        IGenericRepository<T> GetRepository<T>() where T : class;
 
 
         Task<int> CompleteAsync();

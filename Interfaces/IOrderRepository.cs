@@ -2,7 +2,7 @@
 
 namespace Ecommerce.Interfaces
 {
-    public interface IOrderRepository: IGenericRespository<Order>
+    public interface IOrderRepository: IGenericRepository<Order>
     {
         Task<Order> GetOrderWithProduct(int orderId);
     }

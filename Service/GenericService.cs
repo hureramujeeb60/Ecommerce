@@ -1,22 +1,21 @@
 ﻿using Ecommerce.Helper;
 using Ecommerce.Interfaces;
-using Ecommerce.Models;
-using System.Linq.Expressions;
+
 
 namespace Ecommerce.Service
 {
-    public class GenericsService<T> : IGenericService<T> where T : class
+    public class GenericService<T> : IGenericService<T> where T : class
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<T> _repository;
 
-        public GenericsService(IUnitOfWork unitOfWork)
+        public GenericService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _repository = _unitOfWork.GetRepository<T>();
         }
 
-        public async Task<ApiResponse<T>> GetByIdAsync(int id)
+        public async Task<APIResponse<T>> GetByIdAsync(int id)
         {
             try
             {
@@ -46,11 +45,11 @@ namespace Ecommerce.Service
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<T>>> GetAllAsync()
+        public async Task<APIResponse<IEnumerable<T>>> GetAllAsync()
         {
             try
             {
-                var result = await _genericRepository.GetAll();
+                var result = await _repository.GetAllAsync();
                 if (result == null)
                 {
                     return new APIResponse<IEnumerable<T>>()
@@ -76,12 +75,12 @@ namespace Ecommerce.Service
             }
         }
 
-        public async Task<ApiResponse<T>> AddAsync(T entity)
+        public async Task<APIResponse<T>> AddAsync(T entity)
         {
             try
             {
-                await _genericRepository.Add(entity);
-                await _unitOfWork.SaveAsync();
+                await _repository.AddAsync(entity);
+                await _unitOfWork.CompleteAsync();
                 return new APIResponse<T>
                 {
                     Success = true,
@@ -99,11 +98,11 @@ namespace Ecommerce.Service
             }
         }
 
-        public async Task<ApiResponse<T>> Update(T entity)
+        public async Task<APIResponse<T>> Update(int id, T entity)
         {
             try
             {
-                var data = await _genericRepository.GetById(id);
+                var data = await _repository.GetByIdAsync(id);
                 if (data == null)
                 {
                     return new APIResponse<T>
@@ -113,8 +112,8 @@ namespace Ecommerce.Service
                     };
                 }
 
-                await _genericRepository.Update(id, entity);
-                await _unitOfWork.SaveAsync();
+                _repository.Update(id, entity);
+                await _unitOfWork.CompleteAsync();
                 return new APIResponse<T>
                 {
                     Success = true,
@@ -131,11 +130,11 @@ namespace Ecommerce.Service
             }
         }
 
-        public async Task<ApiResponse<T>> Delete(T entity)
+        public async Task<APIResponse<T>> Delete(int id)
         {
             try
             {
-                var result = await _genericRepository.GetById(id);
+                var result = await _repository.GetByIdAsync(id);
                 if (result == null)
                 {
                     return new APIResponse<T>
@@ -144,8 +143,8 @@ namespace Ecommerce.Service
                         Message = MessageHelper.NotFound(typeof(T).Name)
                     };
                 }
-                await _genericRepository.Delete(id);
-                await _unitOfWork.SaveAsync();
+                await _repository.Delete(id);
+                await _unitOfWork.CompleteAsync();
                 return new APIResponse<T>
                 {
                     Success = true,

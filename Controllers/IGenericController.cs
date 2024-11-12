@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace shoppetApi.Controllers
+namespace Ecommerce.Controllers
 {
-    public interface IGenericController<T> where T : class
+    public interface IGenericController<T, TDto> where T : class where TDto : class
     {
-        Task<ActionResult<IEnumerable<T>>> GetAllAsync();
-        Task<ActionResult<T>> GetByIdAsync(int id);
-        Task<ActionResult<T>> AddAsync([FromBody] T entity);
-        Task<ActionResult<T>> UpdateAsync(int id, [FromBody] T entity);
-        Task<ActionResult<T>> DeleteAsync(int id);
+        Task<ActionResult<IEnumerable<TDto>>> GetAllAsync();
+        Task<ActionResult<TDto>> GetByIdAsync(int id);
+        Task<ActionResult<TDto>> AddAsync([FromBody] T entity);
+        Task<ActionResult<TDto>> Update(int id, [FromBody] T entity);
+        Task<ActionResult<TDto>> Delete(int id);
 
     }
 }

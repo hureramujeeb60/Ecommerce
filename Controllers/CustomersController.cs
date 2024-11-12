@@ -2,44 +2,17 @@
 using Ecommerce.Interfaces;
 using Ecommerce.Models;
 using Ecommerce.DTO;
+using Ecommerce.Service;
+using AutoMapper;
 
 namespace Ecommerce.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CustomersController: ControllerBase
+    public class CustomersController : GenericController<Customer, CustomerDto>
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public CustomersController(IUnitOfWork unitOfWork)
+        public CustomersController(IGenericService<Customer> genericService, IMapper mapper) : base(genericService, mapper)
         {
-            _unitOfWork = unitOfWork;
         }
-
-        [HttpPost]
-        public async Task<IActionResult> AddCustomer(CustomerDto customerDto)
-        {
-            if (customerDto == null)
-            {
-                return BadRequest("Customer Data is null");
-            }
-
-            var customer = new Customer
-            {
-                Name = customerDto.Name,
-                Email = customerDto.Email,
-            };
-
-            var success = await _unitOfWork.Customers.AddAsync(customer);
-
-            if(!success || await _unitOfWork.CompleteAsync() == 0)
-            {
-                return StatusCode(500, "Failed to Add Customer");
-            }
-
-            return Ok("Customer Added Successfully");
-
-        }
-
     }
 }

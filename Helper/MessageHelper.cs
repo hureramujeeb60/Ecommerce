@@ -1,4 +1,4 @@
-namespace shoppetApi.Helper
+namespace Ecommerce.Helper
 {
 	public static class MessageHelper
 	{

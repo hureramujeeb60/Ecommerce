@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Ecommerce.Repositories
 {
-    public class GenericRepository<T> : IGenericRespository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -25,25 +25,24 @@ namespace Ecommerce.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) => await _dbSet.Where(predicate).ToListAsync();
-
-        public async Task<bool> AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
-            return true;
         }
 
-        public bool Update(T entity)
+       
+        public async Task Update(int id, T entity)
         {
             _dbSet.Update(entity);
-            return true;
         }
 
-        public bool Delete(T entity)
+        public async Task Delete(int id)
         {
-            _dbSet.Remove(entity);
-            return true;
+            var entity = await _dbSet.FindAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+            }
         }
-
     }   
 }

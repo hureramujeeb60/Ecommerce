@@ -1,1 +1,50 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific folders
+.vscode/
 .vs/
+_ReSharper.Caches/
+
+# Build folders
+bin/
+obj/
+Debug/
+Release/
+
+# Auto-generated files
+*.log
+*.tlog
+*.idb
+*.pdb
+*.ipch
+*.rsp
+*.res
+*.ilk
+*.aps
+*.pch
+
+# Publish directory
+publish/
+
+# Packages
+*.nupkg
+*.snupkg
+packages/
+
+# Visual Studio working files
+*.cache
+*.bak
+*.swp
+
+# Local history and backups
+Backup/
+_ReSharper/
+
+# IIS Express settings
+.iisexpress/
+logs/

@@ -1,12 +1,14 @@
 ﻿using Ecommerce.Interfaces;
+using Ecommerce.Repositories;
 using Ecommerce.Models;
+
 
 namespace Ecommerce.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
-        private readonly ConcurrentDictionary<Type, object> _repositories = new();
+        private readonly Dictionary<Type, object> _repositories = new();
 
         public UnitOfWork(ApplicationDbContext context,
             ICustomerRepository customerRepository,

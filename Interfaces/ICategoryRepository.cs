@@ -2,7 +2,7 @@
 
 namespace Ecommerce.Interfaces
 {
-    public interface ICategoryRepository: IGenericRespository<Category>
+    public interface ICategoryRepository: IGenericRepository<Category>
     {
     }
 }

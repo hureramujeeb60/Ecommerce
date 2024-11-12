@@ -8,7 +8,7 @@ namespace Ecommerce.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Please enter the username")]
+        [Required(ErrorMessage = "Please enter the customer name")]
         [MaxLength(100)]
         public string Name { get; set; }
 

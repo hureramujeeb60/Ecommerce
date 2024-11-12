@@ -1,6 +1,6 @@
 ﻿namespace Ecommerce.Helper
 {
-    public class ApiResponse<T>
+    public class APIResponse<T>
     {
         public bool Success { get; set; }
         public string? Message { get; set; }

@@ -1,6 +1,9 @@
+using Ecommerce.Controllers;
 using Ecommerce.Data;
+using Ecommerce.Helper;
 using Ecommerce.Interfaces;
 using Ecommerce.Repositories;
+using Ecommerce.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,11 +20,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 40))));
 
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
+
+builder.Services.AddScoped(typeof(IGenericController<,>), typeof(GenericController<,>));
+
+
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.RegisterServices();
+builder.Services.RegisterRepositories();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
